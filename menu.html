@@ -10,6 +10,19 @@
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 body { margin: 0; }
+/* One type scale for every page. A single base size follows the screen width;
+   every role is a fixed multiple of it, so heading : subheading : copy always stays 2 : 0.8 : 1. */
+:root {
+  --type-base: clamp(1rem, 0.25rem + 4.1vw, 1.5rem);    /* about 20px on a 390px-wide phone, 24px at most */
+  --size-copy: var(--type-base);                        /* dishes and button descriptions */
+  --size-heading: calc(var(--type-base) * 2);           /* page title: What's on Your Plate? */
+  --size-subheading: calc(var(--type-base) * 0.8);      /* section names and button names: STARTER, TODAY'S MENU */
+  --track-subheading: .24em;
+  --track-copy: .05em;
+  --leading-copy: 1.3;
+}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
 /* Layout: one printed menu card on a sage table, watercolour leaves in opposite corners, logo as the sign-off; editors get a quiet bar to rewrite it. */
 :root {
   --table: #e2e5de;
@@ -85,7 +98,7 @@ body {
   font-family: var(--f-display);
   font-style: italic;
   font-weight: 400;
-  font-size: clamp(2.35rem, 10vw, 3.6rem);
+  font-size: var(--size-heading);
   line-height: 1.12;
   letter-spacing: .01em;
   text-wrap: balance;
@@ -93,11 +106,11 @@ body {
 .courses { display: flex; flex-direction: column; gap: clamp(34px, 8vw, 54px); }
 .course-name {
   margin: 0 0 clamp(14px, 3.5vw, 22px);
-  padding-left: .34em; /* balances the trailing letter-spacing so the word sits centred */
+  padding-left: var(--track-subheading); /* balances the trailing letter-spacing so the word sits centred */
   font-family: var(--f-display);
   font-weight: 600;
-  font-size: clamp(1.08rem, 4.4vw, 1.4rem);
-  letter-spacing: .34em;
+  font-size: var(--size-subheading);
+  letter-spacing: var(--track-subheading);
   text-transform: uppercase;
   color: var(--ink-soft);
 }
@@ -115,15 +128,15 @@ body {
   font-family: var(--f-body);
   font-style: italic;
   font-weight: 500;
-  font-size: clamp(1.2rem, 4.8vw, 1.55rem);
-  line-height: 1.25;
-  letter-spacing: .07em;
+  font-size: var(--size-copy);
+  line-height: var(--leading-copy);
+  letter-spacing: var(--track-copy);
   color: var(--ink-soft);
   text-wrap: balance;
 }
 .empty-note {
   font-style: italic;
-  font-size: 1.3rem;
+  font-size: var(--size-copy);
   color: var(--ink-muted);
 }
 

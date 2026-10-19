@@ -9,6 +9,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Playfair+Display:wght@500;600&display=swap">
 <style>
+/* One type scale for every page. A single base size follows the screen width;
+   every role is a fixed multiple of it, so heading : subheading : copy always stays 2 : 0.8 : 1. */
+:root {
+  --type-base: clamp(1rem, 0.25rem + 4.1vw, 1.5rem);    /* about 20px on a 390px-wide phone, 24px at most */
+  --size-copy: var(--type-base);                        /* dishes and button descriptions */
+  --size-heading: calc(var(--type-base) * 2);           /* page title: What's on Your Plate? */
+  --size-subheading: calc(var(--type-base) * 0.8);      /* section names and button names: STARTER, TODAY'S MENU */
+  --track-subheading: .24em;
+  --track-copy: .05em;
+  --leading-copy: 1.3;
+}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
 /* Layout: one sheet of watercolour paper, leaves in opposite corners like the printed menu, logo then three hairline-ruled links down the middle. */
 :root {
   --paper: #f1f1ed;
@@ -105,17 +118,17 @@ a.link:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
 .link-name {
   font-family: var(--f-display);
   font-weight: 600;
-  font-size: clamp(.95rem, 4vw, 1.05rem);
-  letter-spacing: .2em;
+  font-size: var(--size-subheading);
+  letter-spacing: var(--track-subheading);
   text-transform: uppercase;
   color: var(--ink);
 }
 .link-note {
   font-style: italic;
   font-weight: 500;
-  font-size: clamp(1.1rem, 4.4vw, 1.2rem);
-  line-height: 1.3;
-  letter-spacing: .03em;
+  font-size: var(--size-copy);
+  line-height: var(--leading-copy);
+  letter-spacing: var(--track-copy);
   color: var(--ink-soft);
 }
 .link-arrow {
