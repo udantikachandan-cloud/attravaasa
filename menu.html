@@ -120,7 +120,19 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(10px, 2.6vw, 16px);
+  gap: .5em;
+}
+/* Divider between dishes in the same section: two short lines with a gold dot. Sized in em so it scales with the text. */
+.dishes li + li::before {
+  content: "";
+  display: block;
+  width: 3.2em;
+  height: .3em;
+  margin: 0 auto .5em;
+  background:
+    radial-gradient(circle, var(--gold) 0 .11em, transparent .12em) center / .3em .3em no-repeat,
+    linear-gradient(var(--line), var(--line)) left center / 1.15em 1px no-repeat,
+    linear-gradient(var(--line), var(--line)) right center / 1.15em 1px no-repeat;
 }
 .dishes li {
   max-width: 30ch;
