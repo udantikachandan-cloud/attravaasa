@@ -376,7 +376,7 @@ footer{
 <div class="leaf leaf-tl" aria-hidden="true"></div>
 <div class="leaf leaf-br" aria-hidden="true"></div>
 <div class="wrap">
-  <a class="back" href="./">‹ About the puzzle</a>
+  <a class="back" href="crossword.html">‹ About the puzzle</a>
   <div class="masthead">
     <h1>Ranbhaji</h1>
     <div class="deva">रानभाजी</div>
@@ -783,6 +783,9 @@ function renderNotes(){
 }
 
 /* ---------- after a word is solved ---------- */
+const SHOWN_KEY = "ranbhaji-v2-shown";
+let shownNotes = new Set();
+try { shownNotes = new Set(JSON.parse(sessionStorage.getItem(SHOWN_KEY) || "[]")); } catch (err) {}
 function motion(){ return window.matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth"; }
 function afterSolve(){
   const now = entries.filter(entrySolved).map(e => e.dir + e.num);
@@ -796,8 +799,15 @@ function afterSolve(){
     if (b) setTimeout(() => b.scrollIntoView({behavior: motion(), block: "center"}), 300);
     return;
   }
+  /* only the word being typed opens its note; a crossing word completed along the way unlocks quietly */
   const e = currentEntry();
-  spotlight = (e && fresh.includes(e.dir + e.num)) ? e.dir + e.num : fresh[0];
+  const key = e ? e.dir + e.num : null;
+  if (!key || !fresh.includes(key)) return;
+  /* a note opens by itself only once per session */
+  if (shownNotes.has(key)) return;
+  shownNotes.add(key);
+  try { sessionStorage.setItem(SHOWN_KEY, JSON.stringify([...shownNotes])); } catch (err) {}
+  spotlight = key;
   renderNotes();
   const note = document.getElementById("note-" + spotlight);
   if (note) setTimeout(() => note.scrollIntoView({behavior: motion(), block: "center"}), 300);
