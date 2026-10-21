@@ -278,6 +278,13 @@ button{font:inherit;color:inherit}
 .cell.active{background:var(--gold-soft);color:var(--ink)}
 .cell.active .num{color:var(--ink-soft)}
 .cell.revealed{color:var(--alert)}
+.cell.wrong{color:var(--alert)}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-9px)} 30%{transform:translateX(8px)} 45%{transform:translateX(-6px)}
+  60%{transform:translateX(5px)} 75%{transform:translateX(-3px)} 90%{transform:translateX(2px)}
+}
+.grid-col.shake{animation:shake .45s ease}
 .cell.wrong::after{
   content:"";position:absolute;inset:8%;pointer-events:none;
   background:linear-gradient(to top left,transparent 45%,var(--alert) 45%,var(--alert) 55%,transparent 55%);
@@ -308,6 +315,46 @@ ol.cluelist li.solved .ct{text-decoration:line-through;text-decoration-color:var
   font-variant-numeric:lining-nums tabular-nums;color:var(--sage);
 }
 ol.cluelist li.solved .cn{color:var(--sage)}
+
+/* ---------- photo hints ---------- */
+.hint-btn{
+  flex:none;align-self:flex-start;margin-left:auto;
+  padding:6px 10px;cursor:pointer;
+  background:var(--field);border:1px solid var(--gold-soft);border-radius:999px;
+  font-family:var(--f-display);font-style:normal;font-weight:600;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;line-height:1;color:var(--ink-soft);
+}
+.hint-btn:hover{background:var(--gold-wash);border-color:var(--gold)}
+.hint-btn:focus-visible,.hint-close:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+ol.cluelist li .ct{flex:1;min-width:0}
+ol.cluelist li .hint-btn{margin-top:.2em}
+.cluebar .text{position:relative}
+.cluebar .label{padding-right:64px}
+.bar-hint{position:absolute;top:8px;right:10px}
+.hint-layer{
+  position:fixed;inset:0;z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background:rgba(29,30,27,.55);
+}
+.hint-card{
+  width:100%;max-width:520px;max-height:100%;overflow:auto;
+  padding:14px 16px 18px;background:var(--paper);border-radius:8px;
+  box-shadow:0 20px 50px -20px rgba(0,0,0,.6);
+}
+.hint-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hint-title{font-family:var(--f-display);font-weight:600;font-size:var(--size-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--sage)}
+.hint-close{width:38px;height:38px;flex:none;cursor:pointer;background:var(--field);border:1px solid var(--line);border-radius:50%;font-size:16px;line-height:1;color:var(--ink-soft)}
+.hint-photo{
+  width:100%;max-height:56vh;overflow:hidden;border-radius:4px;background:var(--sage-wash);
+  display:flex;align-items:center;justify-content:center;
+}
+.hint-photo img{display:block;width:100%;height:100%;max-height:56vh;object-fit:contain}
+.hint-photo.failed img{display:none}
+.hint-photo.failed::after{content:"The photo didn’t load. Check your connection and try again.";padding:24px;text-align:center;font-style:italic;font-size:var(--size-copy);color:var(--ink-muted)}
+.hint-clue{margin:14px 0 0;font-style:italic;font-weight:500;font-size:var(--size-copy);line-height:var(--leading-copy);color:var(--ink)}
+.hint-credit{margin:10px 0 0;font-family:var(--f-ui);font-size:11px;line-height:1.45;color:var(--ink-muted)}
+.hint-credit a{color:inherit}
 
 /* ---------- keyboard ---------- */
 .kb{
@@ -386,14 +433,7 @@ footer{
 
   <div class="toolbar">
     <div class="timer"><span>Time</span><em id="clock" style="font-style:normal">0:00</em></div>
-    <details class="menu" id="menu-check">
-      <summary>Check</summary>
-      <div class="menu-body">
-        <button type="button" data-act="check-letter">Check this letter</button>
-        <button type="button" data-act="check-word">Check this word</button>
-        <button type="button" data-act="check-all">Check the whole grid</button>
-      </div>
-    </details>
+    <button class="btn" type="button" id="btn-check">Check letter</button>
     <button class="btn" type="button" id="btn-reset">Start over</button>
     <span class="spacer"></span>
     <button class="btn" type="button" id="btn-notes" hidden>Read all field notes</button>
@@ -405,6 +445,7 @@ footer{
         <button class="nav" type="button" id="prev-clue" aria-label="Previous clue">‹</button>
         <div class="text">
           <div class="label" id="clue-label">1 Across</div>
+          <button type="button" class="hint-btn bar-hint" id="bar-hint" aria-label="Photo hint for this clue">Hint</button>
           <div class="body" id="clue-body">—</div>
         </div>
         <button class="nav" type="button" id="next-clue" aria-label="Next clue">›</button>
@@ -436,14 +477,22 @@ footer{
   </section>
 
   <footer>
-    The twelve ingredients, their spellings, their seasons and whether to forage them come from the <i>Wild Food Zine</i> (Monsoon, Palghar, 2022) in our library, and its calendar by Rhea Shah. Seasons are rough and shift a little from year to year and valley to valley.
+    The twelve ingredients, their spellings, their seasons and whether to forage them come from the <i>Wild Food Zine</i> (Monsoon, Palghar, 2022) in our library, and its calendar by Rhea Shah. Seasons are rough and shift a little from year to year and valley to valley. Hint photos come from Wikimedia Commons, and each one credits its photographer.
   </footer>
 </div>
 <footer class="signoff"><div class="logo" role="img" aria-label="Logo: the perfect pause"></div></footer>
 </article></div>
 
+<div class="hint-layer" id="hint" hidden>
+  <div class="hint-card" role="dialog" aria-modal="true" aria-labelledby="hint-title">
+    <div class="hint-head"><span class="hint-title" id="hint-title">Hint</span><button type="button" class="hint-close" id="hint-close" aria-label="Close the photo">✕</button></div>
+    <div class="hint-photo"><img id="hint-img" alt=""></div>
+    <p class="hint-clue" id="hint-clue"></p>
+    <p class="hint-credit" id="hint-credit"></p>
+  </div>
+</div>
 <script>
-const PUZZLE = {"rows": 11, "cols": 11, "grid": ["U...KURDU..", "MAHUA......", "B...N...S..", "E...T.P.H.A", "R...O.H.E.M", "....L.O.V.B", ".T.TANDALYA", "KENA..S.A.D", ".R.K..H...I", ".A.L..I....", "..NALI....."], "numbers": [[1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 6], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 7, 0, 8, 0, 0, 0, 0, 0, 0, 0], [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0]], "across": [{"num": 2, "row": 0, "col": 4, "answer": "KURDU", "clue": "Amaranth’s look-alike, with a red stem and silver-pink flower spikes", "fact": "Kurdu is traditionally recommended for young children, lactating mothers, and people with fever, haemorrhage, anaemia or kidney complaints. A concoction of kharshinga peels and kurdu seeds, prepared by tribal communities, is believed to have medicinal properties. In season from July to late September; forage or buy freely.", "cat": "leaf"}, {"num": 3, "row": 1, "col": 0, "answer": "MAHUA", "clue": "Tree whose sweet flowers fall just before the rains and are gathered at dawn", "fact": "In Maharashtra it’s called moha. For Adivasi communities such as the Gond, it is a sacred tree, never cut down, and its flowers are gathered only after they fall. They arrive in spring, just as food stores run low. The Warli of Palghar eat them, press the seeds for oil, brew moha daru and barter the flowers for grain, and Gadchiroli gathers almost all of the state’s crop. Rules brought in under British rule, the Bombay Abkari Act (1878) and the Mhowra Act (1892), and kept after Independence, turned this tradition into a crime. In 2017, Maharashtra freed the flowers from forest transport permits to open them up for trade.", "cat": "fruit"}, {"num": 8, "row": 6, "col": 3, "answer": "TANDALYA", "clue": "Green traditionally taken for the eyes, its shoots said to restore virility", "fact": "Tandalya is around from June to early August; forage it with care, as it’s mostly picked rather than bought. The plant is also believed to be diuretic, cooling, a tonic and a laxative. Fun fact: in aquarium shops across Mumbai, a reddish-purple variety of tandalya is sold as “Purple Mint”, a decorative underwater plant rather than a food.", "cat": "leaf"}, {"num": 9, "row": 7, "col": 0, "answer": "KENA", "clue": "Dayflower with tiny blue petals, its leaves cooked as bhaji", "fact": "Kena is around from mid-June to the end of August. This dayflower is native to tropical Asia and Africa. Forage it with care; it’s rarely sold, so most people pick it from field bunds and roadsides.", "cat": "leaf"}, {"num": 10, "row": 10, "col": 2, "answer": "NALI", "clue": "___ bhaji: water spinach with hollow stems", "fact": "Nali bhaji is around from June to the end of August. It grows across tropical Asia, floating on its hollow stems in ponds and paddy channels. It’s plentiful enough to forage freely, and you’re more likely to find it in a pond than in a market.", "cat": "leaf"}], "down": [{"num": 1, "row": 0, "col": 0, "answer": "UMBER", "clue": "Cluster fig that fruits straight from its trunk", "fact": "Umber has the longest season of all twelve, from June to well past October. The tree grows from India across Southeast Asia to Australia. Pick the figs with care; they’re rarely sold, so most people gather them straight from the tree.", "cat": "fruit"}, {"num": 2, "row": 0, "col": 4, "answer": "KANTOLA", "clue": "Spiny little gourd, like karela without the bitterness", "fact": "Wild kantola is abundant through most of the monsoon, from July to early September. It’s native to Asia and found widely across India and Bangladesh. Forage or buy it freely; these days it isn’t hard to find in the market.", "cat": "fruit"}, {"num": 4, "row": 2, "col": 8, "answer": "SHEVLA", "clue": "Dragon stalk yam whose flowering stalk shoots up after the first rains", "fact": "Shevla is valued for what it does for the body: it’s believed to help restore gut bacteria, boost immunity and provide micronutrients. It’s also traditionally used to treat certain bacterial infections, and a paste of its tuber is applied to treat scabies. Around for only a few weeks in June; forage or buy freely.", "cat": "fruit"}, {"num": 5, "row": 3, "col": 6, "answer": "PHODSHI", "clue": "Grass-like green, the leaves of safed musli", "fact": "Phodshi is valued in Ayurveda for its medicinal properties. It’s eaten in the early monsoon to help the body adjust to the monsoon diet to come. Its roots are traditionally taken for joint pain, rheumatism and fertility problems, and in some parts it’s given to new mothers after childbirth in the form of laddoos. In season from June into early July; forage or buy freely.", "cat": "leaf"}, {"num": 6, "row": 3, "col": 10, "answer": "AMBADI", "clue": "Sour leaf of a hibiscus relative, also grown for its fibre", "fact": "Ambadi is around from July to late September. The same plant is farmed for its fibre as Deccan hemp, which makes it one of the easiest of the twelve to find in the market. Forage or buy it freely.", "cat": "leaf"}, {"num": 7, "row": 6, "col": 1, "answer": "TERA", "clue": "Wild colocasia leaves, rolled and steamed to make alu vadi", "fact": "Tera is around from late June to the end of August. Taro, the plant it comes from, is native to South and Southeast Asia. Forage the wild leaves with care; colocasia leaves are easy to buy, but wild tera is mostly picked from damp, shady ground.", "cat": "leaf"}, {"num": 8, "row": 6, "col": 3, "answer": "TAKLA", "clue": "Field-edge weed whose leaves are picked young, before they turn bitter", "fact": "Takla is at its best from the first rains to early July, while the leaves are still young. It grows as a weed on field edges and roadsides, so forage it freely; it’s easier to pick than to buy.", "cat": "leaf"}]};
+const PUZZLE = {"rows": 11, "cols": 11, "grid": ["U...KURDU..", "MAHUA......", "B...N...S..", "E...T.P.H.A", "R...O.H.E.M", "....L.O.V.B", ".T.TANDALYA", "KENA..S.A.D", ".R.K..H...I", ".A.L..I....", "..NALI....."], "numbers": [[1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 6], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 7, 0, 8, 0, 0, 0, 0, 0, 0, 0], [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0]], "across": [{"num": 2, "row": 0, "col": 4, "answer": "KURDU", "clue": "Amaranth’s look-alike, with a red stem and silver-pink flower spikes", "fact": "Kurdu is traditionally recommended for young children, lactating mothers, and people with fever, haemorrhage, anaemia or kidney complaints. A concoction of kharshinga peels and kurdu seeds, prepared by tribal communities, is believed to have medicinal properties. In season from July to late September; forage or buy freely.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Celosia_argentea_in_Philippines.jpg/960px-Celosia_argentea_in_Philippines.jpg", "w": 960, "h": 640, "page": "https://commons.wikimedia.org/wiki/File:Celosia_argentea_in_Philippines.jpg", "by": "TheNuggeteer", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 3, "row": 1, "col": 0, "answer": "MAHUA", "clue": "Tree whose sweet flowers fall just before the rains and are gathered at dawn", "fact": "In Maharashtra it’s called moha. For Adivasi communities such as the Gond, it is a sacred tree, never cut down, and its flowers are gathered only after they fall. They arrive in spring, just as food stores run low. The Warli of Palghar eat them, press the seeds for oil, brew moha daru and barter the flowers for grain, and Gadchiroli gathers almost all of the state’s crop. Rules brought in under British rule, the Bombay Abkari Act (1878) and the Mhowra Act (1892), and kept after Independence, turned this tradition into a crime. In 2017, Maharashtra freed the flowers from forest transport permits to open them up for trade.", "cat": "fruit", "photo": {"img": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Madhuca_longifolia_6.jpg", "w": 800, "h": 600, "page": "https://commons.wikimedia.org/wiki/File:Madhuca_longifolia_6.jpg", "by": "SMarndi", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 8, "row": 6, "col": 3, "answer": "TANDALYA", "clue": "Green traditionally taken for the eyes, its shoots said to restore virility", "fact": "Tandalya is around from June to early August; forage it with care, as it’s mostly picked rather than bought. The plant is also believed to be diuretic, cooling, a tonic and a laxative. Fun fact: in aquarium shops across Mumbai, a reddish-purple variety of tandalya is sold as “Purple Mint”, a decorative underwater plant rather than a food.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Alternanthera_sessilis_in_Kadavoor.jpg/960px-Alternanthera_sessilis_in_Kadavoor.jpg", "w": 960, "h": 1280, "page": "https://commons.wikimedia.org/wiki/File:Alternanthera_sessilis_in_Kadavoor.jpg", "by": "Jeevan Jose", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 9, "row": 7, "col": 0, "answer": "KENA", "clue": "Dayflower with tiny blue petals, its leaves cooked as bhaji", "fact": "Kena is around from mid-June to the end of August. This dayflower is native to tropical Asia and Africa. Forage it with care; it’s rarely sold, so most people pick it from field bunds and roadsides.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Commelina_benghalensis_7.jpg/960px-Commelina_benghalensis_7.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Commelina_benghalensis_7.jpg", "by": "Nativeplants garden", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 10, "row": 10, "col": 2, "answer": "NALI", "clue": "___ bhaji: water spinach with hollow stems", "fact": "Nali bhaji is around from June to the end of August. It grows across tropical Asia, floating on its hollow stems in ponds and paddy channels. It’s plentiful enough to forage freely, and you’re more likely to find it in a pond than in a market.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Ipomoea_aquatica_kz01.jpg/960px-Ipomoea_aquatica_kz01.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Ipomoea_aquatica_kz01.jpg", "by": "Krzysztof Ziarnek, Kenraiz", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}], "down": [{"num": 1, "row": 0, "col": 0, "answer": "UMBER", "clue": "Cluster fig that fruits straight from its trunk", "fact": "Umber has the longest season of all twelve, from June to well past October. The tree grows from India across Southeast Asia to Australia. Pick the figs with care; they’re rarely sold, so most people gather them straight from the tree.", "cat": "fruit", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/%E0%AE%85%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF1.jpg/960px-%E0%AE%85%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF1.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:%E0%AE%85%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF1.jpg", "by": "Dr. S. Soundarapandian", "lic": "Public domain", "licUrl": ""}}, {"num": 2, "row": 0, "col": 4, "answer": "KANTOLA", "clue": "Spiny little gourd, like karela without the bitterness", "fact": "Wild kantola is abundant through most of the monsoon, from July to early September. It’s native to Asia and found widely across India and Bangladesh. Forage or buy it freely; these days it isn’t hard to find in the market.", "cat": "fruit", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Spiny_gourd.JPG/960px-Spiny_gourd.JPG", "w": 960, "h": 640, "page": "https://commons.wikimedia.org/wiki/File:Spiny_gourd.JPG", "by": "AntanO", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 4, "row": 2, "col": 8, "answer": "SHEVLA", "clue": "Dragon stalk yam whose flowering stalk shoots up after the first rains", "fact": "Shevla is valued for what it does for the body: it’s believed to help restore gut bacteria, boost immunity and provide micronutrients. It’s also traditionally used to treat certain bacterial infections, and a paste of its tuber is applied to treat scabies. Around for only a few weeks in June; forage or buy freely.", "cat": "fruit", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Amorphophallus_commutatus_131462765.jpg/960px-Amorphophallus_commutatus_131462765.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Amorphophallus_commutatus_131462765.jpg", "by": "Dinesh Valke", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 5, "row": 3, "col": 6, "answer": "PHODSHI", "clue": "Grass-like green, the leaves of safed musli", "fact": "Phodshi is valued in Ayurveda for its medicinal properties. It’s eaten in the early monsoon to help the body adjust to the monsoon diet to come. Its roots are traditionally taken for joint pain, rheumatism and fertility problems, and in some parts it’s given to new mothers after childbirth in the form of laddoos. In season from June into early July; forage or buy freely.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Chlorophytum_borivilianum_%284713527485%29.jpg/960px-Chlorophytum_borivilianum_%284713527485%29.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Chlorophytum_borivilianum_(4713527485).jpg", "by": "Dinesh Valke", "lic": "CC BY-SA 2.0", "licUrl": "https://creativecommons.org/licenses/by-sa/2.0"}}, {"num": 6, "row": 3, "col": 10, "answer": "AMBADI", "clue": "Sour leaf of a hibiscus relative, also grown for its fibre", "fact": "Ambadi is around from July to late September. The same plant is farmed for its fibre as Deccan hemp, which makes it one of the easiest of the twelve to find in the market. Forage or buy it freely.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Hibiscus_cannabinus_7065.JPG/500px-Hibiscus_cannabinus_7065.JPG", "w": 500, "h": 667, "page": "https://commons.wikimedia.org/wiki/File:Hibiscus_cannabinus_7065.JPG", "by": "Raj.palgun13", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 7, "row": 6, "col": 1, "answer": "TERA", "clue": "Wild colocasia leaves, rolled and steamed to make alu vadi", "fact": "Tera is around from late June to the end of August. Taro, the plant it comes from, is native to South and Southeast Asia. Forage the wild leaves with care; colocasia leaves are easy to buy, but wild tera is mostly picked from damp, shady ground.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Colocasia_esculenta_leaves.jpg/960px-Colocasia_esculenta_leaves.jpg", "w": 960, "h": 929, "page": "https://commons.wikimedia.org/wiki/File:Colocasia_esculenta_leaves.jpg", "by": "Gs35357670", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 8, "row": 6, "col": 3, "answer": "TAKLA", "clue": "Field-edge weed whose leaves are picked young, before they turn bitter", "fact": "Takla is at its best from the first rains to early July, while the leaves are still young. It grows as a weed on field edges and roadsides, so forage it freely; it’s easier to pick than to buy.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Young_%27Senna_Tora%27.jpg/960px-Young_%27Senna_Tora%27.jpg", "w": 960, "h": 1280, "page": "https://commons.wikimedia.org/wiki/File:Young_%27Senna_Tora%27.jpg", "by": "SameerUNO", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}]};
 
 const CAT_ORDER = ["fruit","leaf"];
 const CAT_LABEL = {
@@ -532,7 +581,10 @@ function buildList(id, list, dir){
   list.forEach(e => {
     const li = document.createElement("li");
     li.dataset.num = e.num; li.dataset.dir = dir;
-    li.innerHTML = '<span class="cn">'+e.num+'</span><span class="ct">'+e.clue+'</span>';
+    li.innerHTML = '<span class="cn">'+e.num+'</span><span class="ct">'+e.clue+'</span>' +
+      (e.photo ? '<button type="button" class="hint-btn" aria-label="Photo hint for '+e.num+' '+dir+'">Hint</button>' : '');
+    const hb = li.querySelector(".hint-btn");
+    if (hb) hb.addEventListener("click", ev => { ev.stopPropagation(); openHint(entries.find(x => x.num===e.num && x.dir===dir)); });
     li.addEventListener("click", () => {
       cur.dir = dir;
       const ent = entries.find(x => x.num===e.num && x.dir===dir);
@@ -613,10 +665,12 @@ function jumpEntry(delta){
 /* ---------- input ---------- */
 function typeLetter(ch){
   if (finished) return;
+  const at = entryAt[cur.r + "," + cur.c] || {}, words = [at.across, at.down].filter(Boolean);
+  const wasFull = words.map(isFull);
   fill[cur.r][cur.c] = ch;
   marks[cur.r][cur.c] = "";
   startTimer();
-  advance(); render(); save(); checkFinished(); afterSolve();
+  advance(); render(); save(); checkFinished(); afterSolve(); wrongWords(words, wasFull);
 }
 function backspace(){
   if (finished) return;
@@ -698,7 +752,7 @@ document.addEventListener("click", ev => {
 document.getElementById("btn-reset").addEventListener("click", () => {
   fill  = Array.from({length:R}, () => Array(C).fill(""));
   marks = Array.from({length:R}, () => Array(C).fill(""));
-  seconds = 0; finished = false; running = false; solvedKeys = new Set(); spotlight = null;
+  seconds = 0; finished = false; running = false; solvedKeys = new Set(); spotlight = null; hintsUsed = new Set(); saveHints();
   document.getElementById("banner-slot").innerHTML = "";
   save(); render();
 });
@@ -723,7 +777,7 @@ function checkFinished(){
   const slot = document.getElementById("banner-slot");
   slot.innerHTML =
     '<div class="banner"><strong>All twelve gathered.</strong><p>' +
-    fmt(seconds) + (revealed ? ' · ' + revealed + ' letter' + (revealed>1?'s':'') + ' revealed' : ' · no help taken') +
+    fmt(seconds) + (hintsUsed.size ? ' · ' + hintsUsed.size + ' photo hint' + (hintsUsed.size>1?'s':'') + ' used' : ' · no help taken') +
     '. Every field note below is now open.</p></div>';
   showAllNotes = true;
   renderNotes();
@@ -787,6 +841,60 @@ const SHOWN_KEY = "ranbhaji-v2-shown";
 let shownNotes = new Set();
 try { shownNotes = new Set(JSON.parse(sessionStorage.getItem(SHOWN_KEY) || "[]")); } catch (err) {}
 function motion(){ return window.matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth"; }
+document.getElementById("btn-check").addEventListener("click", () => checkCells([[cur.r, cur.c]]));
+
+/* ---------- photo hints ---------- */
+const HINTS_KEY = "ranbhaji-v2-hints";
+let hintsUsed = new Set(), hintReturn = null;
+try { hintsUsed = new Set(JSON.parse(localStorage.getItem(HINTS_KEY) || "[]")); } catch (err) {}
+function saveHints(){ try { localStorage.setItem(HINTS_KEY, JSON.stringify([...hintsUsed])); } catch (err) {} }
+function link(href, text){ const a = document.createElement("a"); a.href = href; a.target = "_blank"; a.rel = "noopener"; a.textContent = text; return a; }
+function openHint(e){
+  if (!e || !e.photo) return;
+  const p = e.photo, img = document.getElementById("hint-img"), frame = img.parentElement;
+  document.getElementById("hint-title").textContent = "Hint · " + e.num + " " + (e.dir === "across" ? "Across" : "Down");
+  document.getElementById("hint-clue").textContent = e.clue;
+  frame.classList.remove("failed");
+  frame.style.aspectRatio = p.w + " / " + p.h;
+  img.onerror = () => frame.classList.add("failed");
+  img.alt = "Photo hint for " + e.num + " " + e.dir;
+  img.src = p.img;
+  const credit = document.getElementById("hint-credit");
+  credit.textContent = "Photo: " + p.by + " · ";
+  credit.append(p.licUrl ? link(p.licUrl, p.lic) : p.lic, " · ", link(p.page, "Wikimedia Commons"));
+  /* a hint counts as help only while the word is still unsolved */
+  if (!finished && !entrySolved(e)) { hintsUsed.add(e.dir + e.num); saveHints(); }
+  hintReturn = document.activeElement;
+  document.getElementById("hint").hidden = false;
+  document.getElementById("hint-close").focus();
+}
+function closeHint(){
+  document.getElementById("hint").hidden = true;
+  if (hintReturn && hintReturn.focus) hintReturn.focus();
+}
+document.getElementById("hint-close").addEventListener("click", closeHint);
+document.getElementById("hint").addEventListener("click", ev => { if (ev.target.id === "hint") closeHint(); });
+document.getElementById("bar-hint").addEventListener("click", () => openHint(currentEntry()));
+/* while the photo is open, keys don't type into the grid behind it; Escape closes it */
+window.addEventListener("keydown", ev => {
+  if (document.getElementById("hint").hidden) return;
+  if (ev.key === "Escape") closeHint();
+  ev.stopImmediatePropagation();
+}, true);
+
+/* ---------- a word filled in wrong: cross out the wrong letters, shake, buzz ---------- */
+function isFull(e){ return e.cells.every(([r, c]) => fill[r][c]); }
+function wrongWords(words, wasFull){
+  const wrong = words.filter((e, i) => !wasFull[i] && isFull(e) && !entrySolved(e));
+  if (!wrong.length) return;
+  wrong.forEach(e => e.cells.forEach(([r, c]) => { if (fill[r][c] !== solution[r][c]) marks[r][c] = "wrong"; }));
+  render(); save();
+  try { if (navigator.vibrate) navigator.vibrate([70, 50, 70]); } catch (err) {}
+  if (motion() === "auto") return;   /* people who turn off motion get no shake */
+  const col = document.querySelector(".grid-col");
+  col.classList.remove("shake"); void col.offsetWidth; col.classList.add("shake");
+  col.addEventListener("animationend", () => col.classList.remove("shake"), {once: true});
+}
 function afterSolve(){
   const now = entries.filter(entrySolved).map(e => e.dir + e.num);
   const fresh = now.filter(k => !solvedKeys.has(k));
