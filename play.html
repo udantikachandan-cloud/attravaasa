@@ -358,6 +358,8 @@ ol.cluelist li .hint-btn{margin-top:.2em}
 
 /* ---------- completion page ---------- */
 .banner .share-win{margin-top:12px}
+.toolbar .share-top{background:var(--sage);border-color:var(--sage);color:#fff}
+.toolbar .share-top:hover{background:var(--sage-deep);border-color:var(--sage-deep)}
 html.done-open, html.done-open body{overflow:hidden}
 .done-layer{position:fixed;inset:0;z-index:60;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--paper)}
 .done-page{
@@ -485,6 +487,7 @@ footer{
   <div class="toolbar">
     <div class="timer"><span>Time</span><em id="clock" style="font-style:normal">0:00</em></div>
     <button class="btn" type="button" id="btn-check">Check letter</button>
+    <button class="btn share-top" type="button" id="btn-share-win" hidden onclick="openDone()">Share your win</button>
     <button class="btn" type="button" id="btn-reset">Start over</button>
     <span class="spacer"></span>
     <button class="btn" type="button" id="btn-notes" hidden>Read all field notes</button>
@@ -1023,7 +1026,14 @@ async function makeStory(){
   document.getElementById("story-img").src = storyUrl;
   document.querySelectorAll(".js-share").forEach(b => { b.disabled = false; b.textContent = "Share to your story"; });
 }
+const DONE_SEEN_KEY = "ranbhaji-v2-done-seen";
+function openDoneOnReturn(){
+  let seen = false;
+  try { seen = sessionStorage.getItem(DONE_SEEN_KEY) === "1"; } catch (err) {}
+  if (!seen) setTimeout(openDone, 500);
+}
 async function openDone(){
+  try { sessionStorage.setItem(DONE_SEEN_KEY, "1"); } catch (err) {}
   document.getElementById("done-time").textContent = "Solved in " + fmt(seconds) + " " + helpLine() + ".";
   document.querySelectorAll(".share-note").forEach(n => { n.hidden = true; });
   const layer = document.getElementById("done");
@@ -1094,6 +1104,7 @@ function afterSolve(){
     spotlight = null; renderNotes();
     const b = document.querySelector(".banner");
     if (b) setTimeout(() => b.scrollIntoView({behavior: "auto", block: "center"}), 300);
+    document.getElementById("btn-share-win").hidden = false;
     setTimeout(openDone, 700);   /* then the completion page with the Instagram story */
     return;
   }
@@ -1129,6 +1140,7 @@ function backToGrid(){
 
 /* ---------- render ---------- */
 function render(){
+  const sw = document.getElementById("btn-share-win"); if (sw) sw.hidden = !finished;
   const e = currentEntry();
   const inWord = new Set(e ? e.cells.map(([r,c]) => r+","+c) : []);
   for (let r=0;r<R;r++){
@@ -1169,6 +1181,7 @@ function start(state){
   solvedKeys = new Set(entries.filter(entrySolved).map(e => e.dir + e.num));
   render();
   if (finished) checkFinished();
+  if (finished) openDoneOnReturn();
 }
 try {
   window.claude?.hot?.snapshot?.(() => ({fill, marks, seconds, finished}));
