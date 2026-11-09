@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="A crossword of twelve wild foods of the Maharashtra monsoon.">
-<meta property="og:title" content="Ranbhaji — a crossword of forest foods">
+<meta property="og:title" content="Raanbhaji — a crossword of forest foods">
 <meta property="og:description" content="Twelve wild foods of the Maharashtra monsoon. Clues in English, answers in the local names.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
@@ -14,7 +14,7 @@
 img{max-width:100%}
 [hidden]{display:none!important}
 </style>
-<title>Ranbhaji Crossword</title>
+<title>Raanbhaji Crossword</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap">
@@ -278,6 +278,13 @@ button{font:inherit;color:inherit}
 .cell.active{background:var(--gold-soft);color:var(--ink)}
 .cell.active .num{color:var(--ink-soft)}
 .cell.revealed{color:var(--alert)}
+.cell.wrong{color:var(--alert)}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  15%{transform:translateX(-9px)} 30%{transform:translateX(8px)} 45%{transform:translateX(-6px)}
+  60%{transform:translateX(5px)} 75%{transform:translateX(-3px)} 90%{transform:translateX(2px)}
+}
+.grid-col.shake{animation:shake .45s ease}
 .cell.wrong::after{
   content:"";position:absolute;inset:8%;pointer-events:none;
   background:linear-gradient(to top left,transparent 45%,var(--alert) 45%,var(--alert) 55%,transparent 55%);
@@ -308,6 +315,85 @@ ol.cluelist li.solved .ct{text-decoration:line-through;text-decoration-color:var
   font-variant-numeric:lining-nums tabular-nums;color:var(--sage);
 }
 ol.cluelist li.solved .cn{color:var(--sage)}
+
+/* ---------- photo hints ---------- */
+.hint-btn{
+  flex:none;align-self:flex-start;margin-left:auto;
+  padding:6px 10px;cursor:pointer;
+  background:var(--field);border:1px solid var(--gold-soft);border-radius:999px;
+  font-family:var(--f-display);font-style:normal;font-weight:600;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;line-height:1;color:var(--ink-soft);
+}
+.hint-btn:hover{background:var(--gold-wash);border-color:var(--gold)}
+.hint-btn:focus-visible,.hint-close:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+ol.cluelist li .ct{flex:1;min-width:0}
+ol.cluelist li .hint-btn{margin-top:.2em}
+.cluebar .text{position:relative}
+.cluebar .label{padding-right:64px}
+.bar-hint{position:absolute;top:8px;right:10px}
+.hint-layer{
+  position:fixed;inset:0;z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background:rgba(29,30,27,.55);
+}
+.hint-card{
+  width:100%;max-width:520px;max-height:100%;overflow:auto;
+  padding:14px 16px 18px;background:var(--paper);border-radius:8px;
+  box-shadow:0 20px 50px -20px rgba(0,0,0,.6);
+}
+.hint-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hint-title{font-family:var(--f-display);font-weight:600;font-size:var(--size-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--sage)}
+.hint-close{width:38px;height:38px;flex:none;cursor:pointer;background:var(--field);border:1px solid var(--line);border-radius:50%;font-size:16px;line-height:1;color:var(--ink-soft)}
+.hint-photo{
+  width:100%;max-height:56vh;overflow:hidden;border-radius:4px;background:var(--sage-wash);
+  display:flex;align-items:center;justify-content:center;
+}
+.hint-photo img{display:block;width:100%;height:100%;max-height:56vh;object-fit:contain}
+.hint-photo.failed img{display:none}
+.hint-photo.failed::after{content:"The photo didn’t load. Check your connection and try again.";padding:24px;text-align:center;font-style:italic;font-size:var(--size-copy);color:var(--ink-muted)}
+.hint-clue{margin:14px 0 0;font-style:italic;font-weight:500;font-size:var(--size-copy);line-height:var(--leading-copy);color:var(--ink)}
+.hint-credit{margin:10px 0 0;font-family:var(--f-ui);font-size:11px;line-height:1.45;color:var(--ink-muted)}
+.hint-credit a{color:inherit}
+
+/* ---------- completion page ---------- */
+.banner .share-win{margin-top:12px}
+html.done-open, html.done-open body{overflow:hidden}
+.done-layer{position:fixed;inset:0;z-index:60;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--paper)}
+.done-page{
+  position:relative;min-height:100%;box-sizing:border-box;
+  padding-top:calc(env(safe-area-inset-top, 0px) + clamp(64px, 16vw, 120px));
+  padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 56px);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.done-close{position:absolute;z-index:2;top:calc(env(safe-area-inset-top, 0px) + 14px);right:max(14px, env(safe-area-inset-right, 0px))}
+.done-inner{position:relative;z-index:1;max-width:32em;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.done-inner .eyebrow{margin:0}
+.done-title{margin:0;font-family:var(--f-display);font-style:italic;font-weight:400;font-size:var(--size-heading);line-height:1.1;text-wrap:balance}
+.done-time{margin:0;font-style:italic;font-weight:500;font-size:var(--size-copy);line-height:var(--leading-copy);color:var(--ink-soft)}
+.story-label{margin:6px 0 -6px;font-family:var(--f-display);font-weight:600;font-size:var(--size-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--sage)}
+.story-preview{
+  margin:0;width:min(62%, 240px);aspect-ratio:9/16;overflow:hidden;border-radius:10px;
+  background:var(--sage-wash);box-shadow:0 1px 2px rgba(40,52,40,.1),0 16px 34px -18px rgba(40,52,40,.45);
+}
+.story-preview img{display:block;width:100%;height:100%;object-fit:cover}
+.story-preview img:not([src]){visibility:hidden}
+.done-steps{list-style:none;width:100%;margin:10px 0 4px;padding:0;text-align:left;border-top:1px solid var(--line)}
+.done-steps li{display:flex;gap:14px;align-items:flex-start;padding:18px 2px;border-bottom:1px solid var(--line)}
+.step-n{
+  flex:none;width:1.9em;height:1.9em;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--gold-soft);border-radius:50%;background:var(--field);
+  font-family:var(--f-display);font-weight:600;font-size:var(--size-subheading);color:var(--ink-soft);
+  font-variant-numeric:lining-nums;
+}
+.step-body{flex:1;min-width:0}
+.step-title{margin:0;padding-top:.1em;font-weight:500;font-size:var(--size-copy);line-height:var(--leading-copy);color:var(--ink)}
+.step-title b{font-weight:700}
+.step-body .start,.step-body .btn{margin-top:12px}
+.step-body .start{border:0;cursor:pointer;padding:15px 24px;font-size:var(--size-ui);letter-spacing:.14em;white-space:nowrap}
+.step-body .start[disabled]{opacity:.6;cursor:progress}
+.step-note{margin:10px 0 0;font-style:italic;font-weight:500;font-size:var(--size-copy);line-height:var(--leading-copy);color:var(--ink-soft)}
 
 /* ---------- keyboard ---------- */
 .kb{
@@ -379,7 +465,7 @@ footer{
   <a class="back" href="./">‹ Back</a>
   <p class="eyebrow">Maharashtra · monsoon · foods that never reach a market</p>
   <div class="masthead">
-    <h1>Ranbhaji</h1>
+    <h1>Raanbhaji Crossword</h1>
     <div class="deva">रानभाजी</div>
   </div>
   <span class="orn" aria-hidden="true"></span>
@@ -388,7 +474,7 @@ footer{
     <p class="standfirst">This crossword is for everyone who feels rooted in this land, takes pride in it and is curious about what grows in it. It’s a simple puzzle of twelve wild ingredients from Maharashtra. A few already find their way into our food, and we hope to cook with all of them one day, each in its season.</p>
     <p class="standfirst"><b>Clues are in English; every answer is the local name.</b> Solve an entry and its field note unlocks below.</p>
     <div class="reward">
-      <p class="prize">Solve the whole puzzle and dessert is on us: a special one that isn’t on the menu, made just for this.</p>
+      <p class="prize">Solve the whole puzzle and get 20% off your next stay with us.</p>
       <p class="hint"><span class="hint-label">Hint</span>The Wild Food Zine in our library might help.</p>
     </div>
   </div>

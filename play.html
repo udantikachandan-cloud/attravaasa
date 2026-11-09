@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="A crossword of twelve wild foods of the Maharashtra monsoon.">
-<meta property="og:title" content="Ranbhaji — a crossword of forest foods">
+<meta property="og:title" content="Raanbhaji — a crossword of forest foods">
 <meta property="og:description" content="Twelve wild foods of the Maharashtra monsoon. Clues in English, answers in the local names.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
@@ -14,7 +14,7 @@
 img{max-width:100%}
 [hidden]{display:none!important}
 </style>
-<title>Play Ranbhaji</title>
+<title>Play Raanbhaji</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap">
@@ -356,6 +356,57 @@ ol.cluelist li .hint-btn{margin-top:.2em}
 .hint-credit{margin:10px 0 0;font-family:var(--f-ui);font-size:11px;line-height:1.45;color:var(--ink-muted)}
 .hint-credit a{color:inherit}
 
+/* ---------- completion page ---------- */
+.banner .share-win{margin-top:12px}
+html.done-open, html.done-open body{overflow:hidden}
+.done-layer{position:fixed;inset:0;z-index:60;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--paper)}
+.done-page{
+  position:relative;min-height:100%;box-sizing:border-box;
+  padding-top:calc(env(safe-area-inset-top, 0px) + 60px);
+  padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 56px);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.done-close{position:absolute;z-index:2;top:calc(env(safe-area-inset-top, 0px) + 14px);right:max(14px, env(safe-area-inset-right, 0px))}
+.done-inner{position:relative;z-index:1;max-width:30em;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center}
+/* first screen: the result, the picture and the share button */
+.done-hero{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.done-hero .eyebrow{margin:0}
+.done-title{margin:0;font-family:var(--f-display);font-style:italic;font-weight:400;font-size:calc(var(--size-heading) * .85);line-height:1.1;text-wrap:balance}
+.done-time{margin:0;font-style:italic;font-weight:500;font-size:var(--size-copy);line-height:var(--leading-copy);color:var(--ink-soft)}
+.story-preview{
+  margin:4px 0 0;max-width:100%;aspect-ratio:9/16;
+  height:clamp(220px, calc(100vh - 360px), 460px);height:clamp(220px, calc(100svh - 360px), 460px);
+  overflow:hidden;border-radius:10px;background:var(--sage-wash);
+  box-shadow:0 1px 2px rgba(40,52,40,.1),0 16px 34px -18px rgba(40,52,40,.45);
+}
+.story-preview img{display:block;width:100%;height:100%;object-fit:cover}
+.story-preview img:not([src]){visibility:hidden}
+.share-block{display:flex;flex-direction:column;align-items:center;gap:8px}
+.share-block .start{border:0;cursor:pointer;padding:15px 26px;font-size:var(--size-ui);letter-spacing:.14em;white-space:nowrap}
+.share-block .start[disabled]{opacity:.6;cursor:progress}
+.share-note{margin:0;max-width:20rem;font-style:italic;font-weight:500;font-size:15px;line-height:1.4;color:var(--ink-muted)}
+.scroll-cue{
+  display:inline-flex;align-items:center;gap:6px;margin-top:2px;padding:6px 8px;cursor:pointer;
+  background:none;border:0;font-family:var(--f-display);font-weight:600;font-size:11px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);
+}
+.scroll-cue svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6}
+/* below: how to post, kept small and quiet */
+.how{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;margin-top:40px;scroll-margin-top:24px}
+.how-title{margin:0;font-family:var(--f-display);font-weight:600;font-size:var(--size-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--sage)}
+.how-list{list-style:none;margin:4px 0 6px;padding:0;width:100%;max-width:21rem;display:flex;flex-direction:column;gap:16px;text-align:left}
+.how-list li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;align-items:start;font-weight:500;font-size:17px;line-height:1.35;color:var(--ink-soft)}
+.how-list b{font-weight:700;color:var(--ink)}
+.how-icon{width:20px;height:20px;margin-top:1px;fill:none;stroke:var(--sage);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.text-btn{
+  padding:6px 0 0;cursor:pointer;background:none;border:0;
+  font-family:var(--f-display);font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sage);text-decoration:underline;text-underline-offset:3px;
+}
+.text-btn:focus-visible,.scroll-cue:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+.done-notes{margin-top:6px}
+
 /* ---------- keyboard ---------- */
 .kb{
   display:none;flex-direction:column;gap:5px;margin-top:14px;
@@ -425,7 +476,7 @@ footer{
 <div class="wrap">
   <a class="back" href="crossword.html">‹ About the puzzle</a>
   <div class="masthead">
-    <h1>Ranbhaji</h1>
+    <h1>Raanbhaji Crossword</h1>
     <div class="deva">रानभाजी</div>
   </div>
   <span class="orn" aria-hidden="true"></span>
@@ -491,6 +542,40 @@ footer{
     <p class="hint-credit" id="hint-credit"></p>
   </div>
 </div>
+<section class="done-layer" id="done" hidden role="dialog" aria-modal="true" aria-labelledby="done-title">
+  <div class="done-page">
+    <div class="leaf leaf-tl" aria-hidden="true"></div>
+    <div class="leaf leaf-br" aria-hidden="true"></div>
+    <button type="button" class="hint-close done-close" id="done-close" aria-label="Close and go back to the crossword">✕</button>
+    <div class="done-inner">
+      <div class="done-hero">
+        <p class="eyebrow">All twelve gathered</p>
+        <h2 class="done-title" id="done-title">You’ve completed the crossword!</h2>
+        <p class="done-time" id="done-time"></p>
+        <figure class="story-preview"><img id="story-img" alt="Your Raanbhaji story picture, ready to share"></figure>
+        <div class="share-block">
+          <button class="start js-share" type="button" disabled>Getting your picture ready…</button>
+          <p class="share-note" hidden></p>
+        </div>
+        <button class="scroll-cue" type="button">How to post <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      </div>
+      <section class="how" id="how-to-post" aria-labelledby="how-title">
+        <span class="orn" aria-hidden="true"></span>
+        <h3 class="how-title" id="how-title">How to post</h3>
+        <ul class="how-list">
+          <li><svg class="how-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg><span>Share your picture to your Instagram story</span></li>
+          <li><svg class="how-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg><span>Tag <b>@travaasakarjat</b> and two people you want to challenge<br><button class="text-btn" id="copy-handle" type="button">Copy @travaasakarjat</button></span></li>
+          <li><svg class="how-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg><span>Show us your story and get a little something from us</span></li>
+        </ul>
+        <div class="share-block">
+          <button class="start js-share" type="button" disabled>Getting your picture ready…</button>
+          <p class="share-note" hidden></p>
+        </div>
+        <button class="text-btn done-notes" id="done-notes" type="button">Read the field notes</button>
+      </section>
+    </div>
+  </div>
+</section>
 <script>
 const PUZZLE = {"rows": 11, "cols": 11, "grid": ["U...KURDU..", "MAHUA......", "B...N...S..", "E...T.P.H.A", "R...O.H.E.M", "....L.O.V.B", ".T.TANDALYA", "KENA..S.A.D", ".R.K..H...I", ".A.L..I....", "..NALI....."], "numbers": [[1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0], [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 6], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 7, 0, 8, 0, 0, 0, 0, 0, 0, 0], [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0]], "across": [{"num": 2, "row": 0, "col": 4, "answer": "KURDU", "clue": "Amaranth’s look-alike, with a red stem and silver-pink flower spikes", "fact": "Kurdu is traditionally recommended for young children, lactating mothers, and people with fever, haemorrhage, anaemia or kidney complaints. A concoction of kharshinga peels and kurdu seeds, prepared by tribal communities, is believed to have medicinal properties. In season from July to late September; forage or buy freely.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Celosia_argentea_in_Philippines.jpg/960px-Celosia_argentea_in_Philippines.jpg", "w": 960, "h": 640, "page": "https://commons.wikimedia.org/wiki/File:Celosia_argentea_in_Philippines.jpg", "by": "TheNuggeteer", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 3, "row": 1, "col": 0, "answer": "MAHUA", "clue": "Tree whose sweet flowers fall just before the rains and are gathered at dawn", "fact": "In Maharashtra it’s called moha. For Adivasi communities such as the Gond, it is a sacred tree, never cut down, and its flowers are gathered only after they fall. They arrive in spring, just as food stores run low. The Warli of Palghar eat them, press the seeds for oil, brew moha daru and barter the flowers for grain, and Gadchiroli gathers almost all of the state’s crop. Rules brought in under British rule, the Bombay Abkari Act (1878) and the Mhowra Act (1892), and kept after Independence, turned this tradition into a crime. In 2017, Maharashtra freed the flowers from forest transport permits to open them up for trade.", "cat": "fruit", "photo": {"img": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Madhuca_longifolia_6.jpg", "w": 800, "h": 600, "page": "https://commons.wikimedia.org/wiki/File:Madhuca_longifolia_6.jpg", "by": "SMarndi", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 8, "row": 6, "col": 3, "answer": "TANDALYA", "clue": "Green traditionally taken for the eyes, its shoots said to restore virility", "fact": "Tandalya is around from June to early August; forage it with care, as it’s mostly picked rather than bought. The plant is also believed to be diuretic, cooling, a tonic and a laxative. Fun fact: in aquarium shops across Mumbai, a reddish-purple variety of tandalya is sold as “Purple Mint”, a decorative underwater plant rather than a food.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Alternanthera_sessilis_in_Kadavoor.jpg/960px-Alternanthera_sessilis_in_Kadavoor.jpg", "w": 960, "h": 1280, "page": "https://commons.wikimedia.org/wiki/File:Alternanthera_sessilis_in_Kadavoor.jpg", "by": "Jeevan Jose", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 9, "row": 7, "col": 0, "answer": "KENA", "clue": "Dayflower with tiny blue petals, its leaves cooked as bhaji", "fact": "Kena is around from mid-June to the end of August. This dayflower is native to tropical Asia and Africa. Forage it with care; it’s rarely sold, so most people pick it from field bunds and roadsides.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Commelina_benghalensis_7.jpg/960px-Commelina_benghalensis_7.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Commelina_benghalensis_7.jpg", "by": "Nativeplants garden", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 10, "row": 10, "col": 2, "answer": "NALI", "clue": "___ bhaji: water spinach with hollow stems", "fact": "Nali bhaji is around from June to the end of August. It grows across tropical Asia, floating on its hollow stems in ponds and paddy channels. It’s plentiful enough to forage freely, and you’re more likely to find it in a pond than in a market.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Ipomoea_aquatica_kz01.jpg/960px-Ipomoea_aquatica_kz01.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Ipomoea_aquatica_kz01.jpg", "by": "Krzysztof Ziarnek, Kenraiz", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}], "down": [{"num": 1, "row": 0, "col": 0, "answer": "UMBER", "clue": "Cluster fig that fruits straight from its trunk", "fact": "Umber has the longest season of all twelve, from June to well past October. The tree grows from India across Southeast Asia to Australia. Pick the figs with care; they’re rarely sold, so most people gather them straight from the tree.", "cat": "fruit", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/%E0%AE%85%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF1.jpg/960px-%E0%AE%85%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF1.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:%E0%AE%85%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AE%BF1.jpg", "by": "Dr. S. Soundarapandian", "lic": "Public domain", "licUrl": ""}}, {"num": 2, "row": 0, "col": 4, "answer": "KANTOLA", "clue": "Spiny little gourd, like karela without the bitterness", "fact": "Wild kantola is abundant through most of the monsoon, from July to early September. It’s native to Asia and found widely across India and Bangladesh. Forage or buy it freely; these days it isn’t hard to find in the market.", "cat": "fruit", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Spiny_gourd.JPG/960px-Spiny_gourd.JPG", "w": 960, "h": 640, "page": "https://commons.wikimedia.org/wiki/File:Spiny_gourd.JPG", "by": "AntanO", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 4, "row": 2, "col": 8, "answer": "SHEVLA", "clue": "Dragon stalk yam whose flowering stalk shoots up after the first rains", "fact": "Shevla is valued for what it does for the body: it’s believed to help restore gut bacteria, boost immunity and provide micronutrients. It’s also traditionally used to treat certain bacterial infections, and a paste of its tuber is applied to treat scabies. Around for only a few weeks in June; forage or buy freely.", "cat": "fruit", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Amorphophallus_commutatus_131462765.jpg/960px-Amorphophallus_commutatus_131462765.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Amorphophallus_commutatus_131462765.jpg", "by": "Dinesh Valke", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 5, "row": 3, "col": 6, "answer": "PHODSHI", "clue": "Grass-like green, the leaves of safed musli", "fact": "Phodshi is valued in Ayurveda for its medicinal properties. It’s eaten in the early monsoon to help the body adjust to the monsoon diet to come. Its roots are traditionally taken for joint pain, rheumatism and fertility problems, and in some parts it’s given to new mothers after childbirth in the form of laddoos. In season from June into early July; forage or buy freely.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Chlorophytum_borivilianum_%284713527485%29.jpg/960px-Chlorophytum_borivilianum_%284713527485%29.jpg", "w": 960, "h": 720, "page": "https://commons.wikimedia.org/wiki/File:Chlorophytum_borivilianum_(4713527485).jpg", "by": "Dinesh Valke", "lic": "CC BY-SA 2.0", "licUrl": "https://creativecommons.org/licenses/by-sa/2.0"}}, {"num": 6, "row": 3, "col": 10, "answer": "AMBADI", "clue": "Sour leaf of a hibiscus relative, also grown for its fibre", "fact": "Ambadi is around from July to late September. The same plant is farmed for its fibre as Deccan hemp, which makes it one of the easiest of the twelve to find in the market. Forage or buy it freely.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Hibiscus_cannabinus_7065.JPG/500px-Hibiscus_cannabinus_7065.JPG", "w": 500, "h": 667, "page": "https://commons.wikimedia.org/wiki/File:Hibiscus_cannabinus_7065.JPG", "by": "Raj.palgun13", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 7, "row": 6, "col": 1, "answer": "TERA", "clue": "Wild colocasia leaves, rolled and steamed to make alu vadi", "fact": "Tera is around from late June to the end of August. Taro, the plant it comes from, is native to South and Southeast Asia. Forage the wild leaves with care; colocasia leaves are easy to buy, but wild tera is mostly picked from damp, shady ground.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Colocasia_esculenta_leaves.jpg/960px-Colocasia_esculenta_leaves.jpg", "w": 960, "h": 929, "page": "https://commons.wikimedia.org/wiki/File:Colocasia_esculenta_leaves.jpg", "by": "Gs35357670", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}, {"num": 8, "row": 6, "col": 3, "answer": "TAKLA", "clue": "Field-edge weed whose leaves are picked young, before they turn bitter", "fact": "Takla is at its best from the first rains to early July, while the leaves are still young. It grows as a weed on field edges and roadsides, so forage it freely; it’s easier to pick than to buy.", "cat": "leaf", "photo": {"img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Young_%27Senna_Tora%27.jpg/960px-Young_%27Senna_Tora%27.jpg", "w": 960, "h": 1280, "page": "https://commons.wikimedia.org/wiki/File:Young_%27Senna_Tora%27.jpg", "by": "SameerUNO", "lic": "CC BY-SA 4.0", "licUrl": "https://creativecommons.org/licenses/by-sa/4.0"}}]};
 
@@ -778,7 +863,7 @@ function checkFinished(){
   slot.innerHTML =
     '<div class="banner"><strong>All twelve gathered.</strong><p>' +
     fmt(seconds) + (hintsUsed.size ? ' · ' + hintsUsed.size + ' photo hint' + (hintsUsed.size>1?'s':'') + ' used' : ' · no help taken') +
-    '. Every field note below is now open.</p></div>';
+    '. Every field note below is now open.</p><button class="btn share-win" type="button" onclick="openDone()">Share your win</button></div>';
   showAllNotes = true;
   renderNotes();
 }
@@ -882,6 +967,110 @@ window.addEventListener("keydown", ev => {
   ev.stopImmediatePropagation();
 }, true);
 
+/* ---------- completion page and Instagram story picture ---------- */
+const IG = "@travaasakarjat";
+const STORY_QR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFIAQMAAAAI2vVwAAAABlBMVEXw+P8dHhtcbnurAAAAAXRSTlMAQObYZgAAAbtJREFUeNrtmsFuAkEMQ6P+/z+7AhLHI/WAhwtSPUjsFlAPT07syU5VVtZXL7xWPV6Ffn99IN/Wz9v/8D//8kGs35vb867/LPDb8HyfZ5MbRTbPIl2E5wVPlntfsUINzxt9dm2/PppLeN72zxHouNQwTf80eYq///GKv5s8FexTn098cw2li3pfhW5kGs/vDhqeniO1wY8ZNcdupIg+TUOaGm9hcrVBRZ8uT0nwkPgZP7rgCcpSPAjY0BR92nl+3thKwf084u+2PGWYNEGp7yv1bvNEbd+sk+V01fB0YryY0k5ClG54WvWuG0sKlGYUfdo7TQ7mJcdvzcff3QB6dEvwqcd20vD06l3DvN4ByUt2npewxEzPbJ/9+8V+c6dM0NG8PAoJz/f3R7QdGXyuOJPnfX/XcdIyFKzh6eqzSuO7GFMo+f4uTbR0u8QmGp7WfInP3XfDXjpcDk+L54b3muxZ55w+PN2FE2HJiZv0T9/ceaKhsBtNTpjC04vzy23tScdN4en50SiRjn6M8NI/P+Aps6aSDhqeJk95fHTept7vztftIbAV5lIOT9ffz1P0YOlHn3fn67Kyvm39AokJz1VQnEzIAAAAAElFTkSuQmCC";
+let storyFile = null, storyUrl = null;
+function helpLine(){ return hintsUsed.size ? "with " + hintsUsed.size + " photo hint" + (hintsUsed.size > 1 ? "s" : "") : "with no help"; }
+function bgImage(sel){
+  const el = document.querySelector(sel);
+  const m = el && getComputedStyle(el).backgroundImage.match(/url\("?(.*?)"?\)$/);
+  return m ? m[1] : null;
+}
+function loadImage(src){ return new Promise(ok => { if (!src) return ok(null); const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; }); }
+function spaced(ctx, text, x, y, gap){   /* centred text with letter-spacing, for the capitals lines */
+  const chars = [...text], widths = chars.map(ch => ctx.measureText(ch).width);
+  let cx = x - (widths.reduce((a, b) => a + b, 0) + gap * (chars.length - 1)) / 2;
+  ctx.textAlign = "left";
+  chars.forEach((ch, i) => { ctx.fillText(ch, cx, y); cx += widths[i] + gap; });
+  ctx.textAlign = "center";
+}
+async function makeStory(){
+  const W = 1080, H = 1920, canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  const display = '"Playfair Display", Georgia, serif', body = '"Cormorant Garamond", Garamond, Georgia, serif';
+  try {
+    await Promise.all([
+      document.fonts.load('italic 400 160px "Playfair Display"'), document.fonts.load('600 34px "Playfair Display"'),
+      document.fonts.load('italic 500 60px "Cormorant Garamond"'), document.fonts.load('60px "Tiro Devanagari Marathi"', "रानभाजी")]);
+  } catch (err) {}
+  const [tl, br, logo, qr] = await Promise.all([
+    loadImage(bgImage(".card > .leaf-tl")), loadImage(bgImage(".card > .leaf-br")),
+    loadImage(bgImage(".signoff .logo")), loadImage(STORY_QR)]);
+  ctx.fillStyle = "#f1f1ed"; ctx.fillRect(0, 0, W, H);
+  if (tl) ctx.drawImage(tl, 0, 0, 560, 560);
+  if (br) { const w = 380, h = w * br.height / br.width; ctx.drawImage(br, W - w, H - h, w, h); }
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#3b3c38"; ctx.font = "600 34px " + display; spaced(ctx, "ALL TWELVE GATHERED", W / 2, 360, 9);
+  ctx.fillStyle = "#1d1e1b"; ctx.font = "italic 400 160px " + display; ctx.fillText("Raanbhaji", W / 2, 530);
+  ctx.fillStyle = "#4f6b55"; ctx.font = '60px "Tiro Devanagari Marathi", serif'; ctx.fillText("रानभाजी", W / 2, 615);
+  ctx.strokeStyle = "#cfd3ca"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(470, 680); ctx.lineTo(522, 680); ctx.moveTo(558, 680); ctx.lineTo(610, 680); ctx.stroke();
+  ctx.fillStyle = "#b8962e"; ctx.beginPath(); ctx.arc(540, 680, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#3b3c38"; ctx.font = "italic 500 64px " + body; ctx.fillText("Solved in " + fmt(seconds), W / 2, 800);
+  ctx.fillStyle = "#6c6f68"; ctx.font = "italic 500 48px " + body; ctx.fillText(helpLine(), W / 2, 868);
+  ctx.fillStyle = "#1d1e1b"; ctx.font = "italic 400 124px " + display; ctx.fillText("Can you?", W / 2, 1050);
+  ctx.fillStyle = "#3b3c38"; ctx.font = "italic 500 46px " + body; ctx.fillText("Twelve wild foods of the Maharashtra monsoon", W / 2, 1130);
+  if (qr) ctx.drawImage(qr, (W - 250) / 2, 1185, 250, 250);
+  ctx.fillStyle = "#4f6b55"; ctx.font = "600 28px " + display; spaced(ctx, "SCAN TO PLAY · " + IG.toUpperCase(), W / 2, 1490, 6);
+  if (logo) { const w = 280, h = w * logo.height / logo.width; ctx.drawImage(logo, (W - w) / 2, 1530, w, h); }
+  const blob = await new Promise(ok => canvas.toBlob(ok, "image/png"));
+  if (!blob) return;
+  storyFile = new File([blob], "ranbhaji-crossword.png", {type: "image/png"});
+  if (storyUrl) URL.revokeObjectURL(storyUrl);
+  storyUrl = URL.createObjectURL(blob);
+  document.getElementById("story-img").src = storyUrl;
+  document.querySelectorAll(".js-share").forEach(b => { b.disabled = false; b.textContent = "Share to your story"; });
+}
+async function openDone(){
+  document.getElementById("done-time").textContent = "Solved in " + fmt(seconds) + " " + helpLine() + ".";
+  document.querySelectorAll(".share-note").forEach(n => { n.hidden = true; });
+  const layer = document.getElementById("done");
+  layer.hidden = false; layer.scrollTop = 0;
+  document.documentElement.classList.add("done-open");
+  document.getElementById("done-close").focus({preventScroll: true});
+  await makeStory();
+}
+function closeDone(){
+  document.getElementById("done").hidden = true;
+  document.documentElement.classList.remove("done-open");
+}
+document.getElementById("done-close").addEventListener("click", closeDone);
+document.getElementById("done-notes").addEventListener("click", () => {
+  closeDone();
+  document.getElementById("notes").scrollIntoView({behavior: motion(), block: "start"});
+});
+async function shareStory(ev){
+  if (!storyFile) return;
+  const note = ev.currentTarget.nextElementSibling;
+  /* phones: open the share sheet, where guests pick Instagram and then Story */
+  if (navigator.canShare && navigator.canShare({files: [storyFile]})) {
+    try { await navigator.share({files: [storyFile]}); return; }
+    catch (err) { if (err && err.name === "AbortError") return; }
+  }
+  /* no share sheet (most computers, some older phones): save the picture instead */
+  const touch = window.matchMedia("(pointer:coarse)").matches;
+  note.textContent = touch
+    ? "Press and hold your story picture to save it, then add it to your story from Instagram."
+    : "The picture is saved to your downloads. Send it to your phone and add it to your story from Instagram.";
+  note.hidden = false;
+  if (!touch) { const a = document.createElement("a"); a.href = storyUrl; a.download = "ranbhaji-crossword.png"; document.body.appendChild(a); a.click(); a.remove(); }
+}
+document.querySelectorAll(".js-share").forEach(b => b.addEventListener("click", shareStory));
+document.querySelector(".scroll-cue").addEventListener("click", () => document.getElementById("how-to-post").scrollIntoView({behavior: motion(), block: "start"}));
+document.getElementById("copy-handle").addEventListener("click", async ev => {
+  const b = ev.currentTarget;
+  try { await navigator.clipboard.writeText(IG); b.textContent = "Copied " + IG; }
+  catch (err) { b.textContent = IG; }
+  setTimeout(() => { b.textContent = "Copy " + IG; }, 2500);
+});
+window.addEventListener("keydown", ev => {
+  if (document.getElementById("done").hidden) return;
+  if (ev.key === "Escape") closeDone();
+  ev.stopImmediatePropagation();
+}, true);
+
 /* ---------- a word filled in wrong: cross out the wrong letters, shake, buzz ---------- */
 function isFull(e){ return e.cells.every(([r, c]) => fill[r][c]); }
 function wrongWords(words, wasFull){
@@ -904,7 +1093,8 @@ function afterSolve(){
     /* last word: show the finishing message, which guests show for their dessert */
     spotlight = null; renderNotes();
     const b = document.querySelector(".banner");
-    if (b) setTimeout(() => b.scrollIntoView({behavior: motion(), block: "center"}), 300);
+    if (b) setTimeout(() => b.scrollIntoView({behavior: "auto", block: "center"}), 300);
+    setTimeout(openDone, 700);   /* then the completion page with the Instagram story */
     return;
   }
   /* only the word being typed opens its note; a crossing word completed along the way unlocks quietly */
