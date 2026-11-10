@@ -972,7 +972,20 @@ window.addEventListener("keydown", ev => {
 
 /* ---------- completion page and Instagram story picture ---------- */
 const IG = "@travaasakarjat";
-const STORY_QR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFIAQMAAAAI2vVwAAAABlBMVEXw+P8dHhtcbnurAAAAAXRSTlMAQObYZgAAAbtJREFUeNrtmsFuAkEMQ6P+/z+7AhLHI/WAhwtSPUjsFlAPT07syU5VVtZXL7xWPV6Ffn99IN/Wz9v/8D//8kGs35vb867/LPDb8HyfZ5MbRTbPIl2E5wVPlntfsUINzxt9dm2/PppLeN72zxHouNQwTf80eYq///GKv5s8FexTn098cw2li3pfhW5kGs/vDhqeniO1wY8ZNcdupIg+TUOaGm9hcrVBRZ8uT0nwkPgZP7rgCcpSPAjY0BR92nl+3thKwf084u+2PGWYNEGp7yv1bvNEbd+sk+V01fB0YryY0k5ClG54WvWuG0sKlGYUfdo7TQ7mJcdvzcff3QB6dEvwqcd20vD06l3DvN4ByUt2npewxEzPbJ/9+8V+c6dM0NG8PAoJz/f3R7QdGXyuOJPnfX/XcdIyFKzh6eqzSuO7GFMo+f4uTbR0u8QmGp7WfInP3XfDXjpcDk+L54b3muxZ55w+PN2FE2HJiZv0T9/ceaKhsBtNTpjC04vzy23tScdN4en50SiRjn6M8NI/P+Aps6aSDhqeJk95fHTept7vztftIbAV5lIOT9ffz1P0YOlHn3fn67Kyvm39AokJz1VQnEzIAAAAAElFTkSuQmCC";
+const STORY_QR = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQMAAADRyf5aAAAABlBMVEXw+P8dHhtcbnurAAAAAXRSTlMAQObYZgAAAahJREFUeNrtmsEOwzAIQ9H+/5+Z1gA2CZ22c51Kbdrt9ATG0JqvZZ/DPM7rgcXW/WW/rCf8a2H50LogrV3cmuev4kW8gkxGVPCyoufiNfCqdIyrI9DEa4qvyL31KC/idadfGWDxtJhJvzZeVB+HQ/XxC7grvq4ymdcHkfg9HxFhsBRZM9eNeG2KHwUyxT44hZC54msT/MzBCKxaUQAUXzsvcqhO9kt6P+l8hRVpvDtMheLr8Kt5Kinz6idd9fEILxpGpJGIvSkfD15u0C3rrELVxKvZVBJ9dNpMT7xaPqLxgb+A2Cu+hpTMOQ5sBXJS9fHoiFitvKbSpWTiteUjm1XexZ147YJv3j1reVf1j0M/hCmF82i1UlO82N+XrNPgC8ElvzpkJI0j0AsBm3gd8WUGe9qE/ykk/qmPJGLGdj9FTLz6fKLeO9YYLPNU/fbAC+bU0ntZm7OK111TBFeBLwKkX2dxrDe25miEakIhXt2umvc33BiCidek9xlJVRHbiEf69YUXzSowHBOvgxeN7/tW+TjqF31kgsBKiuJ11sf+FatXaiq+eL0BO4LPVTsszLYAAAAASUVORK5CYII=";
+let STORY_HEADLINE = "Your aaji would’ve solved this before chai. Can you?";
+function wrapLines(ctx, text, max){   /* split the headline into evenly balanced lines that fit the picture */
+  const greedy = width => {
+    const lines = []; let line = "";
+    text.split(" ").forEach(w => { const t = line ? line + " " + w : w; if (ctx.measureText(t).width > width && line) { lines.push(line); line = w; } else line = t; });
+    if (line) lines.push(line);
+    return lines;
+  };
+  const count = greedy(max).length;
+  let best = max;
+  for (let w = max; w >= max * 0.45; w -= 10) { if (greedy(w).length > count) break; best = w; }
+  return greedy(best);
+}
 let storyFile = null, storyUrl = null;
 function helpLine(){ return hintsUsed.size ? "with " + hintsUsed.size + " photo hint" + (hintsUsed.size > 1 ? "s" : "") : "with no help"; }
 function bgImage(sel){
@@ -981,6 +994,17 @@ function bgImage(sel){
   return m ? m[1] : null;
 }
 function loadImage(src){ return new Promise(ok => { if (!src) return ok(null); const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src; }); }
+function spacedLeft(ctx, text, x, y, gap){   /* left-aligned text with letter-spacing */
+  ctx.textAlign = "left";
+  [...text].forEach(ch => { ctx.fillText(ch, x, y); x += ctx.measureText(ch).width + gap; });
+  ctx.textAlign = "center";
+}
+function tinted(img, color){   /* recolour the black logo for the dark background */
+  const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+  const x = c.getContext("2d"); x.drawImage(img, 0, 0);
+  x.globalCompositeOperation = "source-in"; x.fillStyle = color; x.fillRect(0, 0, c.width, c.height);
+  return c;
+}
 function spaced(ctx, text, x, y, gap){   /* centred text with letter-spacing, for the capitals lines */
   const chars = [...text], widths = chars.map(ch => ctx.measureText(ch).width);
   let cx = x - (widths.reduce((a, b) => a + b, 0) + gap * (chars.length - 1)) / 2;
@@ -1001,23 +1025,36 @@ async function makeStory(){
   const [tl, br, logo, qr] = await Promise.all([
     loadImage(bgImage(".card > .leaf-tl")), loadImage(bgImage(".card > .leaf-br")),
     loadImage(bgImage(".signoff .logo")), loadImage(STORY_QR)]);
-  ctx.fillStyle = "#f1f1ed"; ctx.fillRect(0, 0, W, H);
-  if (tl) ctx.drawImage(tl, 0, 0, 560, 560);
-  if (br) { const w = 380, h = w * br.height / br.width; ctx.drawImage(br, W - w, H - h, w, h); }
+  /* night grid: deep green, the real crossword shape with blank squares (no answers shown) */
+  const green = "#26332b", cream = "#efe9da", gold = "#d2b25a";
+  ctx.fillStyle = green; ctx.fillRect(0, 0, W, H);
   ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-  ctx.fillStyle = "#3b3c38"; ctx.font = "600 34px " + display; spaced(ctx, "ALL TWELVE GATHERED", W / 2, 360, 9);
-  ctx.fillStyle = "#1d1e1b"; ctx.font = "italic 400 160px " + display; ctx.fillText("Raanbhaji", W / 2, 530);
-  ctx.fillStyle = "#4f6b55"; ctx.font = '60px "Tiro Devanagari Marathi", serif'; ctx.fillText("रानभाजी", W / 2, 615);
-  ctx.strokeStyle = "#cfd3ca"; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(470, 680); ctx.lineTo(522, 680); ctx.moveTo(558, 680); ctx.lineTo(610, 680); ctx.stroke();
-  ctx.fillStyle = "#b8962e"; ctx.beginPath(); ctx.arc(540, 680, 6, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = "#3b3c38"; ctx.font = "italic 500 64px " + body; ctx.fillText("Solved in " + fmt(seconds), W / 2, 800);
-  ctx.fillStyle = "#6c6f68"; ctx.font = "italic 500 48px " + body; ctx.fillText(helpLine(), W / 2, 868);
-  ctx.fillStyle = "#1d1e1b"; ctx.font = "italic 400 124px " + display; ctx.fillText("Can you?", W / 2, 1050);
-  ctx.fillStyle = "#3b3c38"; ctx.font = "italic 500 46px " + body; ctx.fillText("Twelve wild foods of the Maharashtra monsoon", W / 2, 1130);
-  if (qr) ctx.drawImage(qr, (W - 250) / 2, 1185, 250, 250);
-  ctx.fillStyle = "#4f6b55"; ctx.font = "600 28px " + display; spaced(ctx, "SCAN TO PLAY · " + IG.toUpperCase(), W / 2, 1490, 6);
-  if (logo) { const w = 280, h = w * logo.height / logo.width; ctx.drawImage(logo, (W - w) / 2, 1530, w, h); }
+  ctx.fillStyle = gold; ctx.font = "600 28px " + display; spaced(ctx, "RAANBHAJI CROSSWORD", W / 2, 300, 11);
+  let r0 = 99, r1 = -1, c0 = 99, c1 = -1;
+  PUZZLE.grid.forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== ".") { r0 = Math.min(r0, r); r1 = Math.max(r1, r); c0 = Math.min(c0, c); c1 = Math.max(c1, c); } }));
+  const cell = 54, gx = (W - (c1 - c0 + 1) * cell) / 2, gy = 350;
+  for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
+    if (PUZZLE.grid[r][c] === ".") continue;
+    const x = gx + (c - c0) * cell + 3, y = gy + (r - r0) * cell + 3, s2 = cell - 6;
+    ctx.fillStyle = PUZZLE.numbers[r][c] ? "rgba(210,178,90,.92)" : "rgba(239,233,218,.10)";
+    ctx.fillRect(x, y, s2, s2);
+    ctx.strokeStyle = "rgba(239,233,218,.35)"; ctx.lineWidth = 1.5; ctx.strokeRect(x, y, s2, s2);
+  }
+  const top = gy + (r1 - r0 + 1) * cell + 112;
+  ctx.fillStyle = cream; ctx.font = "italic 400 84px " + display;
+  const lines = wrapLines(ctx, STORY_HEADLINE, 860);
+  lines.forEach((ln, i) => ctx.fillText(ln, W / 2, top + i * 100));
+  const after = top + (lines.length - 1) * 100;
+  ctx.fillStyle = gold; ctx.font = "italic 500 48px " + body;
+  ctx.fillText("Solved in " + fmt(seconds) + ", " + helpLine().replace(/^with /, ""), W / 2, after + 86);
+  /* QR card with "scan to play" beside it */
+  const qs = 200, pad = 22, card = qs + pad * 2, blockW = card + 50 + 330, qx = (W - blockW) / 2, qy = after + 150;
+  ctx.fillStyle = cream; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(qx, qy, card, card, 18) : ctx.rect(qx, qy, card, card); ctx.fill();
+  if (qr) { ctx.imageSmoothingEnabled = false; ctx.drawImage(qr, qx + pad, qy + pad, qs, qs); ctx.imageSmoothingEnabled = true; }
+  const tx = qx + card + 50;
+  ctx.fillStyle = gold; ctx.font = "600 26px " + display; spacedLeft(ctx, "SCAN TO PLAY", tx, qy + 78, 8);
+  ctx.fillStyle = cream; ctx.font = "italic 500 46px " + body; ctx.textAlign = "left"; ctx.fillText("Your turn.", tx, qy + 140); ctx.textAlign = "center";
+  if (logo) { const w = 200, h = w * logo.height / logo.width; ctx.drawImage(tinted(logo, cream), tx, qy + 168, w, h); }
   const blob = await new Promise(ok => canvas.toBlob(ok, "image/png"));
   if (!blob) return;
   storyFile = new File([blob], "ranbhaji-crossword.png", {type: "image/png"});
